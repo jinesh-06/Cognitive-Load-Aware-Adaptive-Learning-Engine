@@ -1,0 +1,8 @@
+{
+  "name": "Cognitive Load-Aware Adaptive Learning Engine",
+  "description": "An adaptive e-learning engine that detects learner cognitive load from behavioral signals and dynamically personalizes educational content using Machine Learning, RAG vector retrieval, and Gemini LLM.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
