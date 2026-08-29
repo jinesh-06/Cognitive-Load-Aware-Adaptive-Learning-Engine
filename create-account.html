@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - Adaptive Learning Platform</title>
+    
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-gradient: radial-gradient(circle at 80% 20%, #1e1b4b 0%, #0f172a 50%, #020617 100%);
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --brand-primary: #6366f1;
+            --brand-hover: #4f46e5;
+            --input-bg: rgba(15, 23, 42, 0.6);
+            --input-border: rgba(255, 255, 255, 0.15);
+            --input-focus: #818cf8;
+            --error-color: #f87171;
+            --social-hover: rgba(255, 255, 255, 0.08);
+            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        [data-theme="light"] {
+            --bg-gradient: radial-gradient(circle at 80% 20%, #e0e7ff 0%, #f1f5f9 50%, #e2e8f0 100%);
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --card-border: rgba(255, 255, 255, 0.6);
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --brand-primary: #4f46e5;
+            --brand-hover: #4338ca;
+            --input-bg: #ffffff;
+            --input-border: #cbd5e1;
+            --input-focus: #6366f1;
+            --error-color: #dc2626;
+            --social-hover: rgba(0, 0, 0, 0.05);
+            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--bg-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Decorative Background Orbs */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            z-index: 0;
+            pointer-events: none;
+        }
+        .orb-1 { width: 350px; height: 350px; background: rgba(99, 102, 241, 0.25); top: 10%; left: 15%; }
+        .orb-2 { width: 300px; height: 300px; background: rgba(168, 85, 247, 0.2); bottom: 10%; right: 15%; }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-primary);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(12px);
+            z-index: 10;
+        }
+
+        /* Login Card Container */
+        .login-card {
+            width: 100%;
+            max-width: 440px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            z-index: 1;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Platform Header */
+        .brand-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .brand-logo {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #818cf8 0%, #c084fc 100%);
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .brand-title {
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.25rem;
+        }
+
+        .brand-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        /* OAuth Provider Grid */
+        .social-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-social {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 1.25rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .btn-social:hover {
+            background: var(--social-hover);
+            border-color: var(--input-focus);
+            transform: translateY(-2px);
+        }
+
+        .btn-social.google:hover { color: #ea4335; }
+        .btn-social.linkedin:hover { color: #0a66c2; }
+        .btn-social.github:hover { color: var(--text-primary); }
+
+        /* Divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--input-border);
+        }
+
+        .divider span {
+            padding: 0 0.75rem;
+        }
+
+        /* Form Controls & Floating Labels */
+        .form-group {
+            margin-bottom: 1.25rem;
+            position: relative;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 1rem 1rem 1rem 2.75rem;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: var(--input-focus);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            pointer-events: none;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 1rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0.25rem;
+        }
+
+        .toggle-password:hover {
+            color: var(--text-primary);
+        }
+
+        .error-message {
+            color: var(--error-color);
+            font-size: 0.75rem;
+            margin-top: 0.35rem;
+            display: none;
+        }
+
+        .form-group.has-error .error-message {
+            display: block;
+        }
+
+        .form-group.has-error .form-control {
+            border-color: var(--error-color);
+        }
+
+        /* Options Row */
+        .form-options {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            font-size: 0.85rem;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .remember-me input[type="checkbox"] {
+            accent-color: var(--brand-primary);
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+
+        .forgot-link {
+            color: var(--brand-primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .forgot-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Submit Button */
+        .btn-submit {
+            width: 100%;
+            padding: 0.875rem;
+            background: var(--brand-primary);
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-submit:hover {
+            background: var(--brand-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .spinner {
+            display: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #ffffff;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Footer */
+        .card-footer {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .card-footer a {
+            color: var(--brand-primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .card-footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle Theme">
+        <i class="fa-solid fa-moon"></i>
+    </button>
+
+    <main class="login-card">
+        <header class="brand-header">
+            <div class="brand-logo">
+                <i class="fa-solid fa-brain"></i>
+            </div>
+            <h1 class="brand-title">Adaptive Learning</h1>
+            <p class="brand-subtitle">Sign in to your personalized workspace</p>
+        </header>
+
+        <!-- OAuth Sign-In Buttons -->
+        <div class="social-grid">
+            <button type="button" class="btn-social google" onclick="handleOAuth('Google')" title="Sign in with Google" aria-label="Sign in with Google">
+                <i class="fa-brands fa-google"></i>
+            </button>
+            <button type="button" class="btn-social linkedin" onclick="handleOAuth('LinkedIn')" title="Sign in with LinkedIn" aria-label="Sign in with LinkedIn">
+                <i class="fa-brands fa-linkedin-in"></i>
+            </button>
+            <button type="button" class="btn-social github" onclick="handleOAuth('GitHub')" title="Sign in with GitHub" aria-label="Sign in with GitHub">
+                <i class="fa-brands fa-github"></i>
+            </button>
+        </div>
+
+        <div class="divider">
+            <span>or email credential</span>
+        </div>
+
+        <!-- Credentials Form -->
+        <form id="loginForm" novalidate>
+            <div class="form-group" id="emailGroup">
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-envelope input-icon"></i>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        class="form-control" 
+                        placeholder="Name@domain.com"
+                        required
+                        autocomplete="email"
+                    >
+                </div>
+                <span class="error-message">Please enter a valid email address.</span>
+            </div>
+
+            <div class="form-group" id="passwordGroup">
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-lock input-icon"></i>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        class="form-control" 
+                        placeholder="••••••••" 
+                        required
+                        autocomplete="current-password"
+                    >
+                    <i class="fa-solid fa-eye toggle-password" id="togglePassword"></i>
+                </div>
+                <span class="error-message">Password must be at least 8 characters long.</span>
+            </div>
+
+            <div class="form-options">
+                <label class="remember-me">
+                    <input type="checkbox" id="remember">
+                    <span>Remember device</span>
+                </label>
+                <a href="#" class="forgot-link" onclick="alert('Password reset link sent to your registered email.')">Forgot?</a>
+            </div>
+
+            <button type="submit" class="btn-submit" id="submitBtn">
+                <span class="spinner" id="btnSpinner"></span>
+                <span id="btnText">Sign In</span>
+            </button>
+        </form>
+
+        <footer class="card-footer">
+            Don't have an account? <a href="#">Create account</a>
+        </footer>
+    </main>
+
+    <script>
+        // DOM Elements
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const themeIcon = themeToggleBtn.querySelector('i');
+        const loginForm = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const togglePassword = document.getElementById('togglePassword');
+        const submitBtn = document.getElementById('submitBtn');
+        const btnSpinner = document.getElementById('btnSpinner');
+        const btnText = document.getElementById('btnText');
+
+        // Theme Toggle Logic
+        themeToggleBtn.addEventListener('click', () => {
+            const currentTheme = document.body.getAttribute('data-theme');
+            if (currentTheme === 'light') {
+                document.body.removeAttribute('data-theme');
+                themeIcon.className = 'fa-solid fa-moon';
+            } else {
+                document.body.setAttribute('data-theme', 'light');
+                themeIcon.className = 'fa-solid fa-sun';
+            }
+        });
+
+        // Toggle Password Visibility
+        togglePassword.addEventListener('click', () => {
+            const isPassword = passwordInput.getAttribute('type') === 'password';
+            passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+            togglePassword.className = `fa-solid ${isPassword ? 'fa-eye-slash' : 'fa-eye'} toggle-password`;
+        });
+
+        // Form Validation & Handling
+        const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        const validatePassword = (pass) => pass.length >= 8;
+
+        const setFieldError = (groupId, hasError) => {
+            const group = document.getElementById(groupId);
+            if (hasError) {
+                group.classList.add('has-error');
+            } else {
+                group.classList.remove('has-error');
+            }
+        };
+
+        emailInput.addEventListener('input', () => {
+            if (emailInput.value) setFieldError('emailGroup', !validateEmail(emailInput.value));
+        });
+
+        passwordInput.addEventListener('input', () => {
+            if (passwordInput.value) setFieldError('passwordGroup', !validatePassword(passwordInput.value));
+        });
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const isEmailValid = validateEmail(emailInput.value);
+            const isPasswordValid = validatePassword(passwordInput.value);
+
+            setFieldError('emailGroup', !isEmailValid);
+            setFieldError('passwordGroup', !isPasswordValid);
+
+            if (isEmailValid && isPasswordValid) {
+                // Trigger Loading State
+                submitBtn.disabled = true;
+                btnSpinner.style.display = 'inline-block';
+                btnText.textContent = 'Authenticating...';
+
+                // Simulate Async Login API Call
+                setTimeout(() => {
+                    alert('Authenticated successfully! Redirecting to Adaptive Dashboard...');
+                    submitBtn.disabled = false;
+                    btnSpinner.style.display = 'none';
+                    btnText.textContent = 'Sign In';
+                }, 1800);
+            }
+        });
+
+        // OAuth Handlers
+        function handleOAuth(provider) {
+            alert(`Initiating OAuth 2.0 flow for ${provider}...`);
+            // Replace with actual identity provider endpoint logic:
+            // e.g., window.location.href = `/api/v1/auth/${provider.toLowerCase()}`;
+        }
+    </script>
+</body>
+</html>
