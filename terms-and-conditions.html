@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Terms and Conditions</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --bg: #030712;
+            --card-bg: rgba(15, 23, 42, 0.72);
+            --card-border: rgba(255, 255, 255, 0.12);
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --brand-primary: #6366f1;
+            --brand-hover: #4f46e5;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        body {
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .page-shell {
+            width: min(900px, 100%);
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.7);
+            backdrop-filter: blur(20px);
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-weight: 700;
+        }
+
+        .brand-mark {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, #818cf8, #c084fc);
+        }
+
+        .links {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        .links a:hover {
+            color: var(--text-primary);
+        }
+
+        h1 {
+            font-size: clamp(2rem, 4vw, 2.7rem);
+            margin-bottom: 1rem;
+        }
+
+        .content {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            display: grid;
+            gap: 1rem;
+        }
+
+        .content h2 {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            margin-top: 0.8rem;
+        }
+
+        .cta {
+            margin-top: 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 1.2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: var(--brand-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--brand-hover);
+        }
+
+        .btn-secondary {
+            border: 1px solid var(--card-border);
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+    <main class="page-shell">
+        <div class="topbar">
+            <div class="brand">
+                <div class="brand-mark">AI</div>
+                Adaptive Learning
+            </div>
+            <div class="links">
+                <a href="create-account.html">Create Account</a>
+                <a href="new login.html">Sign In</a>
+            </div>
+        </div>
+
+        <h1>Terms and Conditions</h1>
+
+        <div class="content">
+            <p>Welcome to the Adaptive Learning Platform. By creating an account or using our services, you agree to the following terms.</p>
+
+            <h2>1. Account Responsibilities</h2>
+            <p>You are responsible for keeping your account information accurate and for protecting your login credentials. Any activity under your account is your responsibility.</p>
+
+            <h2>2. Use of the Platform</h2>
+            <p>You agree to use this platform for lawful, educational, and non-disruptive purposes. You may not misuse the service, attempt to bypass security, or distribute harmful content.</p>
+
+            <h2>3. Learning Data and Content</h2>
+            <p>We may collect usage patterns, assessment results, and learning behavior to personalize recommendations. This data helps improve educational experiences and system performance.</p>
+
+            <h2>4. Service Availability</h2>
+            <p>We aim to provide continuous access, but features may change, be paused, or updated without prior notice to improve functionality or security.</p>
+
+            <h2>5. Legal Compliance</h2>
+            <p>By using this platform, you agree to comply with all applicable laws and regulations, including privacy and data-protection requirements.</p>
+
+            <p>We may update these terms as the platform evolves. Continued use after updates indicates your acceptance of those changes.</p>
+        </div>
+
+        <div class="cta">
+            <a class="btn btn-primary" href="create-account.html">Back to Create Account</a>
+            <a class="btn btn-secondary" href="new login.html">Sign In</a>
+        </div>
+    </main>
+</body>
+</html>
