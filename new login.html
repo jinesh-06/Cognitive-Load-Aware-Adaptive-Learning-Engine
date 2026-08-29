@@ -5,17 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign In - Adaptive Learning Platform</title>
     
-    <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <style>
         :root {
-            --bg-gradient: radial-gradient(circle at 80% 20%, #1e1b4b 0%, #0f172a 50%, #020617 100%);
-            --card-bg: rgba(30, 41, 59, 0.7);
-            --card-border: rgba(255, 255, 255, 0.1);
+            --card-bg: rgba(15, 23, 42, 0.65);
+            --card-border: rgba(255, 255, 255, 0.12);
             --text-primary: #f8fafc;
             --text-secondary: #94a3b8;
             --brand-primary: #6366f1;
@@ -24,24 +24,23 @@
             --input-border: rgba(255, 255, 255, 0.15);
             --input-focus: #818cf8;
             --error-color: #f87171;
-            --social-hover: rgba(255, 255, 255, 0.08);
-            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            --social-hover: rgba(255, 255, 255, 0.1);
+            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
         }
 
         [data-theme="light"] {
-            --bg-gradient: radial-gradient(circle at 80% 20%, #e0e7ff 0%, #f1f5f9 50%, #e2e8f0 100%);
-            --card-bg: rgba(255, 255, 255, 0.85);
-            --card-border: rgba(255, 255, 255, 0.6);
+            --card-bg: rgba(255, 255, 255, 0.75);
+            --card-border: rgba(255, 255, 255, 0.8);
             --text-primary: #0f172a;
             --text-secondary: #475569;
             --brand-primary: #4f46e5;
             --brand-hover: #4338ca;
-            --input-bg: #ffffff;
+            --input-bg: rgba(255, 255, 255, 0.8);
             --input-border: #cbd5e1;
             --input-focus: #6366f1;
             --error-color: #dc2626;
             --social-hover: rgba(0, 0, 0, 0.05);
-            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
         }
 
         * {
@@ -54,25 +53,25 @@
 
         body {
             min-height: 100vh;
-            background: var(--bg-gradient);
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 1.5rem;
             position: relative;
-            overflow-x: hidden;
+            overflow: hidden;
+            background-color: #030712;
         }
 
-        /* Decorative Background Orbs */
-        .orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(90px);
+        /* 3D WebGL Canvas Container */
+        #webgl-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
             z-index: 0;
             pointer-events: none;
         }
-        .orb-1 { width: 350px; height: 350px; background: rgba(99, 102, 241, 0.25); top: 10%; left: 15%; }
-        .orb-2 { width: 300px; height: 300px; background: rgba(168, 85, 247, 0.2); bottom: 10%; right: 15%; }
 
         /* Theme Toggle */
         .theme-toggle {
@@ -90,7 +89,9 @@
             align-items: center;
             justify-content: center;
             backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             z-index: 10;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         /* Login Card Container */
@@ -102,8 +103,8 @@
             border-radius: 24px;
             padding: 2.5rem;
             box-shadow: var(--shadow);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             z-index: 1;
             animation: fadeIn 0.6s ease-out;
         }
@@ -201,7 +202,7 @@
             padding: 0 0.75rem;
         }
 
-        /* Form Controls & Floating Labels */
+        /* Form Controls */
         .form-group {
             margin-bottom: 1.25rem;
             position: relative;
@@ -361,8 +362,7 @@
 </head>
 <body>
 
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
+    <canvas id="webgl-bg"></canvas>
 
     <button class="theme-toggle" id="themeToggle" aria-label="Toggle Theme">
         <i class="fa-solid fa-moon"></i>
@@ -377,7 +377,6 @@
             <p class="brand-subtitle">Sign in to your personalized workspace</p>
         </header>
 
-        <!-- OAuth Sign-In Buttons -->
         <div class="social-grid">
             <button type="button" class="btn-social google" onclick="handleOAuth('Google')" title="Sign in with Google" aria-label="Sign in with Google">
                 <i class="fa-brands fa-google"></i>
@@ -394,7 +393,6 @@
             <span>or email credential</span>
         </div>
 
-        <!-- Credentials Form -->
         <form id="loginForm" novalidate>
             <div class="form-group" id="emailGroup">
                 <div class="input-wrapper">
@@ -442,7 +440,7 @@
         </form>
 
         <footer class="card-footer">
-            Don't have an account? <a href="#">Create account</a>
+            Don't have an account? <a href="create-account.html">Create account</a>
         </footer>
     </main>
 
@@ -458,15 +456,108 @@
         const btnSpinner = document.getElementById('btnSpinner');
         const btnText = document.getElementById('btnText');
 
-        // Theme Toggle Logic
+        // Three.js Interactive 3D Background Engine
+        let scene, camera, renderer, particles, geometry, materials = [];
+        let mouseX = 0, mouseY = 0;
+        let isLightTheme = false;
+
+        function init3DBackground() {
+            const canvas = document.getElementById('webgl-bg');
+            scene = new THREE.Scene();
+
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2000);
+            camera.position.z = 1000;
+
+            geometry = new THREE.BufferGeometry();
+            const vertices = [];
+            const particleCount = 1200;
+
+            for (let i = 0; i < particleCount; i++) {
+                const x = Math.random() * 2000 - 1000;
+                const y = Math.random() * 2000 - 1000;
+                const z = Math.random() * 2000 - 1000;
+                vertices.push(x, y, z);
+            }
+
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+
+            // Dynamic Particle Colors (Responsive to theme)
+            const getParticleColor = () => isLightTheme ? 0x4f46e5 : 0x818cf8;
+
+            const textureLoader = new THREE.TextureLoader();
+            
+            // Create particle material with point rendering
+            const particleMaterial = new THREE.PointsMaterial({
+                color: getParticleColor(),
+                size: 6,
+                transparent: true,
+                opacity: 0.7,
+                blending: THREE.AdditiveBlending
+            });
+
+            particles = new THREE.Points(geometry, particleMaterial);
+            scene.add(particles);
+
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            // Mouse Move Event Listener for Dynamic Parallax Effect
+            document.addEventListener('mousemove', onDocumentMouseMove);
+            window.addEventListener('resize', onWindowResize);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function onDocumentMouseMove(event) {
+            mouseX = (event.clientX - window.innerWidth / 2) * 0.5;
+            mouseY = (event.clientY - window.innerHeight / 2) * 0.5;
+        }
+
+        function animate3D() {
+            requestAnimationFrame(animate3D);
+
+            // Smooth Camera Inertia Tracking
+            camera.position.x += (mouseX - camera.position.x) * 0.03;
+            camera.position.y += (-mouseY - camera.position.y) * 0.03;
+            camera.lookAt(scene.position);
+
+            // Constant 3D Field Rotation
+            if (particles) {
+                particles.rotation.x += 0.0008;
+                particles.rotation.y += 0.0012;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        // Initialize WebGL Scene
+        init3DBackground();
+        animate3D();
+
+        // Theme Toggle Logic with WebGL Re-coloration
         themeToggleBtn.addEventListener('click', () => {
             const currentTheme = document.body.getAttribute('data-theme');
             if (currentTheme === 'light') {
                 document.body.removeAttribute('data-theme');
+                document.body.style.backgroundColor = '#030712';
                 themeIcon.className = 'fa-solid fa-moon';
+                isLightTheme = false;
             } else {
                 document.body.setAttribute('data-theme', 'light');
+                document.body.style.backgroundColor = '#e2e8f0';
                 themeIcon.className = 'fa-solid fa-sun';
+                isLightTheme = true;
+            }
+
+            // Update 3D Particles color based on active theme
+            if (particles) {
+                particles.material.color.setHex(isLightTheme ? 0x4f46e5 : 0x818cf8);
+                particles.material.blending = isLightTheme ? THREE.NormalBlending : THREE.AdditiveBlending;
             }
         });
 
@@ -526,8 +617,6 @@
         // OAuth Handlers
         function handleOAuth(provider) {
             alert(`Initiating OAuth 2.0 flow for ${provider}...`);
-            // Replace with actual identity provider endpoint logic:
-            // e.g., window.location.href = `/api/v1/auth/${provider.toLowerCase()}`;
         }
     </script>
 </body>

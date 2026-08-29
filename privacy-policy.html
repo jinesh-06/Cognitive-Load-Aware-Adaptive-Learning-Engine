@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Privacy Policy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --bg: #030712;
+            --card-bg: rgba(15, 23, 42, 0.72);
+            --card-border: rgba(255, 255, 255, 0.12);
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --brand-primary: #6366f1;
+            --brand-hover: #4f46e5;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        body {
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .page-shell {
+            width: min(900px, 100%);
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.7);
+            backdrop-filter: blur(20px);
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-weight: 700;
+        }
+
+        .brand-mark {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, #818cf8, #c084fc);
+        }
+
+        .links {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        .links a:hover {
+            color: var(--text-primary);
+        }
+
+        h1 {
+            font-size: clamp(2rem, 4vw, 2.7rem);
+            margin-bottom: 1rem;
+        }
+
+        .content {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            display: grid;
+            gap: 1rem;
+        }
+
+        .content h2 {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            margin-top: 0.8rem;
+        }
+
+        .cta {
+            margin-top: 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 1.2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: var(--brand-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--brand-hover);
+        }
+
+        .btn-secondary {
+            border: 1px solid var(--card-border);
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+    <main class="page-shell">
+        <div class="topbar">
+            <div class="brand">
+                <div class="brand-mark">AI</div>
+                Adaptive Learning
+            </div>
+            <div class="links">
+                <a href="create-account.html">Create Account</a>
+                <a href="new login.html">Sign In</a>
+            </div>
+        </div>
+
+        <h1>Privacy Policy</h1>
+
+        <div class="content">
+            <p>We respect your privacy and are committed to protecting your information while you learn with our platform.</p>
+
+            <h2>Information we collect</h2>
+            <p>We may collect your name, email address, account details, learning progress, quiz performance, and interaction data to personalize your learning experience.</p>
+
+            <h2>How we use your information</h2>
+            <p>Your data helps us recommend content, measure learning outcomes, improve adaptive features, and maintain account security.</p>
+
+            <h2>Data sharing</h2>
+            <p>We do not sell your personal data. Information may be shared only with trusted service providers that help operate the platform and comply with security requirements.</p>
+
+            <h2>Security</h2>
+            <p>We use reasonable technical and organizational safeguards to protect your account and personal data from unauthorized access.</p>
+
+            <h2>Your choices</h2>
+            <p>You can manage your account preferences and update personal information through your profile settings. You may also contact support to request additional information about your data.</p>
+
+            <p>We may update this policy over time. Continued use of the platform after changes means you accept the revised version.</p>
+        </div>
+
+        <div class="cta">
+            <a class="btn btn-primary" href="create-account.html">Back to Create Account</a>
+            <a class="btn btn-secondary" href="new login.html">Sign In</a>
+        </div>
+    </main>
+</body>
+</html>
