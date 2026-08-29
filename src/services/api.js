@@ -1,4 +1,4 @@
-const API_BASE = '/api';
+const API_BASE = import.meta.env.VITE_API_URL || '/api';
 
 async function safeFetchJson(url, options, fallbackError = 'API request failed') {
   const res = await fetch(url, options);

@@ -11,7 +11,7 @@ import {
   WeakQuestionAnalysis
 } from '../types';
 
-const API_BASE = '/api';
+const API_BASE = import.meta.env.VITE_API_URL || '/api';
 
 async function safeFetchJson<T>(url: string, options?: RequestInit, fallbackError = 'API request failed'): Promise<T> {
   const res = await fetch(url, options);
