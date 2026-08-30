@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { fetchAnalytics, fetchLessons, logBehaviorEvent, predictCognitiveLoad, resetAnalytics } from './services/api.js';
 import { useBehaviorTracker } from './services/behaviorTracker.js';
+import { subscribeToAuthChanges, logoutUser } from './services/firebase.js';
 import { Navbar } from './components/Navbar.jsx';
 import { BehaviorTelemetryBar } from './components/BehaviorTelemetryBar.jsx';
 import { ResearchDisclaimerModal } from './components/ResearchDisclaimerModal.jsx';
@@ -9,8 +10,27 @@ import { ReadingPage } from './pages/ReadingPage.jsx';
 import { QuizPage } from './pages/QuizPage.jsx';
 import { QuizHistoryPage } from './pages/QuizHistoryPage.jsx';
 import { AdminPage } from './pages/AdminPage.jsx';
+import { LoginPage } from './pages/LoginPage.jsx';
 
 export default function App() {
+  // Authentication & Learner Profile State
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem('adaptive_learning_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    try {
+      const saved = localStorage.getItem('adaptive_learning_user');
+      return Boolean(saved && JSON.parse(saved)?.isAuthenticated);
+    } catch {
+      return false;
+    }
+  });
+
   const [activeTab, setActiveTab] = useState('home');
   const [topics, setTopics] = useState([]);
   const [currentTopic, setCurrentTopic] = useState(null);
@@ -42,8 +62,49 @@ export default function App() {
     simulatedOverrides
   );
 
-  // Load initial lessons & analytics
+  // Process OAuth Callback and Load initial lessons & analytics
   useEffect(() => {
+    let isAuthSuccess = false;
+
+    // 1. Detect OAuth Return URL parameters
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      isAuthSuccess = urlParams.get('auth_success') === 'true';
+      const rawUserData = urlParams.get('userData');
+      const authError = urlParams.get('auth_error');
+
+      if (isAuthSuccess && rawUserData) {
+        const oauthUser = JSON.parse(decodeURIComponent(rawUserData));
+        setCurrentUser(oauthUser);
+        setIsAuthenticated(true);
+        setActiveTab('home');
+        try {
+          localStorage.setItem('adaptive_learning_user', JSON.stringify(oauthUser));
+        } catch {}
+        // Clean URL query parameters
+        window.history.replaceState({}, document.title, window.location.pathname);
+      } else if (authError) {
+        console.warn('OAuth Error:', authError);
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    } catch (e) {
+      console.warn('Error parsing OAuth return payload:', e);
+    }
+
+    // 2. Attach Firebase Auth State Listener
+    const unsubscribe = subscribeToAuthChanges((fbUser) => {
+      if (fbUser) {
+        setCurrentUser(fbUser);
+        setIsAuthenticated(true);
+      } else {
+        if (!isAuthSuccess) {
+          // If no user found in Firebase or localStorage, user remains unauthenticated
+          setIsAuthenticated(false);
+        }
+      }
+    });
+
+    // 3. Load initial curriculum & analytics
     async function init() {
       try {
         const [loadedLessons, loadedAnalytics] = await Promise.all([
@@ -65,6 +126,10 @@ export default function App() {
       }
     }
     init();
+
+    return () => {
+      if (typeof unsubscribe === 'function') unsubscribe();
+    };
   }, []);
 
   // Recalculate Cognitive Load via Random Forest ML endpoint
@@ -161,6 +226,30 @@ export default function App() {
     }
   };
 
+  // Authentication Handlers
+  const handleLogin = (user) => {
+    setCurrentUser(user);
+    setIsAuthenticated(true);
+    setActiveTab('home');
+    try {
+      localStorage.setItem('adaptive_learning_user', JSON.stringify(user));
+    } catch (e) {
+      console.warn('Could not save user to localStorage:', e);
+    }
+  };
+
+  const handleLogout = async () => {
+    await logoutUser();
+    setCurrentUser(null);
+    setIsAuthenticated(false);
+    setActiveTab('home');
+  };
+
+  // If user is not authenticated, display the Login Page flow first
+  if (!isAuthenticated) {
+    return <LoginPage onLogin={handleLogin} />;
+  }
+
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900 flex flex-col font-sans selection:bg-indigo-500 selection:text-white" id="app-root">
       {/* Top Main Navigation Bar */}
@@ -171,6 +260,8 @@ export default function App() {
         confidence={confidence}
         onOpenDisclaimer={() => setIsDisclaimerOpen(true)}
         isSimulating={isSimulated}
+        currentUser={currentUser}
+        onLogout={handleLogout}
       />
 
       {/* Behavioral Telemetry Engine Ribbon */}
@@ -262,11 +353,50 @@ export default function App() {
         )}
 
         {activeTab === 'admin' && (
-          <AdminPage
-            analytics={analytics}
-            features={features}
-            onResetSession={handleResetSession}
-          />
+          Boolean(
+            currentUser?.role === 'Admin' ||
+            currentUser?.isAdmin === true ||
+            currentUser?.role?.toLowerCase().includes('admin') ||
+            currentUser?.role?.toLowerCase().includes('instructor')
+          ) ? (
+            <AdminPage
+              analytics={analytics}
+              features={features}
+              onResetSession={handleResetSession}
+              currentUser={currentUser}
+            />
+          ) : (
+            <div className="max-w-xl mx-auto my-12 bg-white rounded-3xl p-8 border border-rose-200 shadow-xl text-center space-y-4">
+              <div className="w-16 h-16 mx-auto rounded-2xl bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600 shadow-sm">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <div className="space-y-1">
+                <span className="px-3 py-1 bg-rose-100 text-rose-800 text-xs font-bold rounded-full uppercase tracking-wider">
+                  403 Access Forbidden
+                </span>
+                <h2 className="text-xl font-extrabold text-slate-900 pt-2">Administrator ID Required</h2>
+                <p className="text-xs text-slate-500 max-w-md mx-auto">
+                  You are currently logged in as a <strong>Student / Learner ({currentUser?.name || 'Alex Mercer'})</strong>. The Admin Dashboard is restricted to verified Administrator credentials.
+                </p>
+              </div>
+              <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+                <button
+                  onClick={() => setActiveTab('home')}
+                  className="w-full sm:w-auto px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl shadow-md cursor-pointer transition-all"
+                >
+                  Return to Student Overview
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="w-full sm:w-auto px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium rounded-xl border border-slate-300 cursor-pointer transition-all"
+                >
+                  Sign Out to Login as Admin
+                </button>
+              </div>
+            </div>
+          )
         )}
       </main>
 

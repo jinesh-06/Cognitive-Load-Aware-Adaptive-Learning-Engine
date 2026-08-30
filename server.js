@@ -6,6 +6,7 @@ import cors from 'cors';
 import path from 'path';
 import { createServer as createViteServer } from 'vite';
 import { apiRouter } from './server/routes/api.js';
+import { authRouter } from './server/routes/auth.js';
 
 async function startServer() {
     const app = express();
@@ -35,7 +36,10 @@ async function startServer() {
         });
     });
 
-    // API Routes
+    // Authentication Routes (Google, GitHub, LinkedIn)
+    app.use('/api/auth', authRouter);
+
+    // Core API Routes
     app.use('/api', apiRouter);
 
     // Vite middleware for development
@@ -83,7 +87,7 @@ async function startServer() {
     });
 
     // Keep event loop alive
-    setInterval(() => {}, 1000 * 60 * 60);
+    setInterval(() => { }, 1000 * 60 * 60);
 }
 
 startServer().catch((err) => {

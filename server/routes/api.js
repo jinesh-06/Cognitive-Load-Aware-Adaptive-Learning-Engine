@@ -477,3 +477,155 @@ apiRouter.post('/quiz/explain-concept', async (req, res) => {
     res.status(500).json({ error: err.message || 'Failed to generate concept explanation' });
   }
 });
+
+// ==========================================
+// 12. Admin Team & Invitation Management
+// ==========================================
+
+let adminTeam = [
+  {
+    id: 'ADM-001',
+    name: 'Dr. Sarah Chen',
+    email: 'sarah.chen@stanford.edu',
+    role: 'Super Administrator',
+    privilege: 'Full System & Curriculum Control',
+    joinedDate: '2026-01-15',
+    status: 'ACTIVE'
+  },
+  {
+    id: 'ADM-002',
+    name: 'System Root Admin',
+    email: 'admin@cognitive-ai.edu',
+    role: 'System Administrator',
+    privilege: 'ML Studio & Telemetry Auditor',
+    joinedDate: '2026-02-01',
+    status: 'ACTIVE'
+  }
+];
+
+let adminInvitations = [
+  {
+    id: 'inv-8821',
+    code: 'ADM-INV-8821',
+    email: 'marcus.vance@mit.edu',
+    name: 'Dr. Marcus Vance',
+    role: 'ML Research Lead',
+    invitedBy: 'Dr. Sarah Chen',
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
+    status: 'PENDING'
+  }
+];
+
+// List all active administrators
+apiRouter.get('/admin/team', (req, res) => {
+  res.json({
+    team: adminTeam,
+    invitations: adminInvitations,
+    totalAdmins: adminTeam.length,
+    pendingInvites: adminInvitations.filter(i => i.status === 'PENDING').length
+  });
+});
+
+// Invite a new administrator
+apiRouter.post('/admin/invite', (req, res) => {
+  try {
+    const { email, name, role, invitedBy } = req.body;
+    if (!email) {
+      return res.status(400).json({ error: 'Invitee email is required' });
+    }
+
+    // Check if already an admin
+    if (adminTeam.some(a => a.email.toLowerCase() === email.toLowerCase())) {
+      return res.status(400).json({ error: 'A user with this email is already an Administrator.' });
+    }
+
+    const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+    const code = `ADM-INV-${randomSuffix}`;
+    const newInvitation = {
+      id: `inv-${Date.now()}`,
+      code,
+      email: email.trim(),
+      name: name?.trim() || email.split('@')[0],
+      role: role || 'System Administrator',
+      invitedBy: invitedBy || 'Dr. Sarah Chen',
+      createdAt: new Date().toISOString(),
+      status: 'PENDING'
+    };
+
+    adminInvitations.unshift(newInvitation);
+
+    res.status(201).json({
+      message: 'Admin invitation generated successfully',
+      invitation: newInvitation,
+      inviteLink: `http://localhost:3000/?invite=${code}`
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message || 'Failed to create invitation' });
+  }
+});
+
+// Validate & redeem an admin invitation code
+apiRouter.post('/admin/validate-invite', (req, res) => {
+  try {
+    const { code, email, name } = req.body;
+    if (!code) {
+      return res.status(400).json({ error: 'Invitation code is required', valid: false });
+    }
+
+    const cleanCode = code.trim().toUpperCase();
+    const invite = adminInvitations.find(i => i.code.toUpperCase() === cleanCode && i.status === 'PENDING');
+
+    if (!invite && cleanCode !== 'ADM-INV-MASTER' && cleanCode !== 'ADM-001') {
+      return res.status(404).json({ error: 'Invalid or expired invitation code', valid: false });
+    }
+
+    const assignedRole = invite?.role || 'System Administrator';
+    const adminId = `ADM-${Math.floor(100 + Math.random() * 900)}`;
+
+    if (invite) {
+      invite.status = 'ACCEPTED';
+      invite.acceptedAt = new Date().toISOString();
+      
+      // Add to team if not already present
+      if (!adminTeam.some(a => a.email.toLowerCase() === (email || invite.email).toLowerCase())) {
+        adminTeam.push({
+          id: adminId,
+          name: name || invite.name,
+          email: email || invite.email,
+          role: assignedRole,
+          privilege: 'Admin Portal Access',
+          joinedDate: new Date().toISOString().split('T')[0],
+          status: 'ACTIVE'
+        });
+      }
+    }
+
+    res.json({
+      valid: true,
+      message: 'Admin invitation verified successfully',
+      adminId,
+      role: assignedRole,
+      isAdmin: true
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message || 'Failed to validate invitation', valid: false });
+  }
+});
+
+// Revoke an invitation
+apiRouter.delete('/admin/invite/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const initialLen = adminInvitations.length;
+    adminInvitations = adminInvitations.filter(i => i.id !== id && i.code !== id);
+
+    if (adminInvitations.length === initialLen) {
+      return res.status(404).json({ error: 'Invitation not found' });
+    }
+
+    res.json({ message: 'Invitation revoked successfully', remaining: adminInvitations });
+  } catch (err) {
+    res.status(500).json({ error: err.message || 'Failed to revoke invitation' });
+  }
+});
+

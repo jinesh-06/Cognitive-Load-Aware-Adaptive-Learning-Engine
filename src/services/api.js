@@ -312,3 +312,57 @@ export async function explainWeakConcept(params) {
     'Failed to generate concept explanation'
   );
 }
+
+export async function fetchAdminTeam() {
+  try {
+    return await safeFetchJson(`${API_BASE}/admin/team`, undefined, 'Failed to fetch admin team');
+  } catch (err) {
+    console.warn('Failed to fetch admin team from backend, using fallback:', err);
+    return {
+      team: [
+        {
+          id: 'ADM-001',
+          name: 'Dr. Sarah Chen',
+          email: 'sarah.chen@stanford.edu',
+          role: 'Super Administrator',
+          privilege: 'Full System & Curriculum Control',
+          joinedDate: '2026-01-15',
+          status: 'ACTIVE'
+        }
+      ],
+      invitations: []
+    };
+  }
+}
+
+export async function createAdminInvite(inviteData) {
+  return safeFetchJson(
+    `${API_BASE}/admin/invite`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(inviteData),
+    },
+    'Failed to generate admin invitation'
+  );
+}
+
+export async function validateAdminInvite(code, userData = {}) {
+  return safeFetchJson(
+    `${API_BASE}/admin/validate-invite`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code, ...userData }),
+    },
+    'Failed to validate admin invitation code'
+  );
+}
+
+export async function revokeAdminInvite(id) {
+  return safeFetchJson(
+    `${API_BASE}/admin/invite/${id}`,
+    { method: 'DELETE' },
+    'Failed to revoke invitation'
+  );
+}
