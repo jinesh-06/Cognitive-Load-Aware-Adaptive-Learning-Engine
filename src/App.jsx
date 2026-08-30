@@ -13,23 +13,9 @@ import { AdminPage } from './pages/AdminPage.jsx';
 import { LoginPage } from './pages/LoginPage.jsx';
 
 export default function App() {
-  // Authentication & Learner Profile State
-  const [currentUser, setCurrentUser] = useState(() => {
-    try {
-      const saved = localStorage.getItem('adaptive_learning_user');
-      return saved ? JSON.parse(saved) : null;
-    } catch {
-      return null;
-    }
-  });
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    try {
-      const saved = localStorage.getItem('adaptive_learning_user');
-      return Boolean(saved && JSON.parse(saved)?.isAuthenticated);
-    } catch {
-      return false;
-    }
-  });
+  // Authentication & Learner Profile State - Always start at Login page
+  const [currentUser, setCurrentUser] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const [activeTab, setActiveTab] = useState('home');
   const [topics, setTopics] = useState([]);
@@ -91,16 +77,10 @@ export default function App() {
       console.warn('Error parsing OAuth return payload:', e);
     }
 
-    // 2. Attach Firebase Auth State Listener
+    // 2. Attach Firebase Auth State Listener (syncs profile without bypassing initial login page)
     const unsubscribe = subscribeToAuthChanges((fbUser) => {
       if (fbUser) {
-        setCurrentUser(fbUser);
-        setIsAuthenticated(true);
-      } else {
-        if (!isAuthSuccess) {
-          // If no user found in Firebase or localStorage, user remains unauthenticated
-          setIsAuthenticated(false);
-        }
+        setCurrentUser((prev) => (prev ? { ...prev, ...fbUser } : null));
       }
     });
 
