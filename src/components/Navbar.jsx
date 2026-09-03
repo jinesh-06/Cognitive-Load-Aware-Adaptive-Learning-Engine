@@ -41,15 +41,53 @@ export const Navbar = ({
     ? [...baseNavItems, { id: 'admin', label: 'Admin Portal', icon: ShieldCheck }]
     : baseNavItems;
 
-  const getInitials = (name) => {
-    if (!name) return 'AM';
-    const parts = name.trim().split(' ');
-    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  const getAvatarColor = (name, isAdminUser) => {
+    if (isAdminUser) return 'bg-gradient-to-tr from-purple-600 to-indigo-600 ring-purple-400/30';
+    if (!name) return 'bg-orange-600 ring-orange-400/30';
+    const firstChar = name.trim().charAt(0).toUpperCase();
+    const letterMap = {
+      A: 'bg-red-600 ring-red-400/30',
+      B: 'bg-pink-600 ring-pink-400/30',
+      C: 'bg-purple-600 ring-purple-400/30',
+      D: 'bg-indigo-700 ring-indigo-400/30',
+      E: 'bg-indigo-600 ring-indigo-400/30',
+      F: 'bg-blue-600 ring-blue-400/30',
+      G: 'bg-cyan-600 ring-cyan-400/30',
+      H: 'bg-teal-600 ring-teal-400/30',
+      I: 'bg-teal-700 ring-teal-500/30',
+      J: 'bg-orange-600 ring-orange-400/30',
+      K: 'bg-amber-600 ring-amber-400/30',
+      L: 'bg-emerald-600 ring-emerald-400/30',
+      M: 'bg-emerald-700 ring-emerald-500/30',
+      N: 'bg-teal-800 ring-teal-500/30',
+      O: 'bg-cyan-700 ring-cyan-500/30',
+      P: 'bg-sky-600 ring-sky-400/30',
+      Q: 'bg-blue-700 ring-blue-500/30',
+      R: 'bg-rose-600 ring-rose-400/30',
+      S: 'bg-violet-600 ring-violet-400/30',
+      T: 'bg-purple-700 ring-purple-500/30',
+      U: 'bg-fuchsia-600 ring-fuchsia-400/30',
+      V: 'bg-pink-700 ring-pink-500/30',
+      W: 'bg-rose-700 ring-rose-500/30',
+      X: 'bg-orange-700 ring-orange-500/30',
+      Y: 'bg-amber-700 ring-amber-500/30',
+      Z: 'bg-slate-700 ring-slate-500/30',
+    };
+    return letterMap[firstChar] || 'bg-orange-600 ring-orange-400/30';
   };
 
+  const getInitial = (name) => {
+    if (!name) return 'J';
+    return name.trim().charAt(0).toUpperCase();
+  };
+
+  const [imgError, setImgError] = React.useState(false);
+
+  React.useEffect(() => {
+    setImgError(false);
+  }, [currentUser?.avatarUrl]);
+
   const userName = currentUser?.name || 'Alex Mercer';
-  const userInitials = getInitials(userName);
 
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs" id="main-navbar">
@@ -140,21 +178,24 @@ export const Navbar = ({
 
             {/* Student / Admin Profile Pill & Logout */}
             <div className="hidden sm:flex items-center gap-2 pl-2 border-l border-slate-200 text-xs text-slate-700">
-              {currentUser?.avatarUrl ? (
+              {currentUser?.avatarUrl && !imgError ? (
                 <img
                   src={currentUser.avatarUrl}
-                  alt={userName}
+                  alt=""
+                  referrerPolicy="no-referrer"
+                  onError={() => setImgError(true)}
                   className="w-7 h-7 rounded-full object-cover shadow-xs border border-slate-300 ring-1 ring-indigo-500/30"
                   title={currentUser?.email || userName}
                 />
               ) : (
                 <div
-                  className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-[11px] shadow-xs text-white ${
-                    isAdmin ? 'bg-gradient-to-tr from-purple-600 to-indigo-600 ring-2 ring-purple-400/30' : 'bg-slate-800'
-                  }`}
+                  className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs shadow-xs text-white ring-1 select-none ${getAvatarColor(
+                    userName,
+                    isAdmin
+                  )}`}
                   title={currentUser?.email || userName}
                 >
-                  {userInitials}
+                  {getInitial(userName)}
                 </div>
               )}
               <div className="flex flex-col">

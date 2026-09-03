@@ -13,11 +13,23 @@ async function startServer() {
     const PORT = process.env.PORT || 3000;
 
     // CORS configuration
+    const allowedOrigins = [
+        'https://cognitive-load-aware-adaptive-learn.vercel.app',
+        'https://cognitive-load-aware-adaptive-learning-engine.vercel.app',
+        'http://localhost:3000',
+        'http://localhost:5173',
+        'http://127.0.0.1:3000',
+        'http://127.0.0.1:5173'
+    ];
+
     app.use(cors({
-        origin: [
-            'https://cognitive-load-aware-adaptive-learn.vercel.app',
-            'https://cognitive-load-aware-adaptive-learning-engine.vercel.app'
-        ],
+        origin: (origin, callback) => {
+            if (!origin || allowedOrigins.includes(origin) || origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
+                return callback(null, true);
+            }
+            return callback(null, true);
+        },
+        credentials: true,
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
         allowedHeaders: ['Content-Type', 'Authorization']
     }));
